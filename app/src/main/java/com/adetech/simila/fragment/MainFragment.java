@@ -14,7 +14,6 @@ import android.support.v7.widget.SearchView;
 import android.widget.Toast;
 
 import com.adetech.simila.R;
-import com.adetech.simila.activity.MainActivity;
 import com.adetech.simila.adapter.CustomAdapter;
 import com.adetech.simila.model.Artist;
 import com.adetech.simila.model.SimilarArtist;
@@ -37,30 +36,26 @@ public class MainFragment extends Fragment
         return new MainFragment();
     }
 
-    private CustomAdapter adapter;
-    private RecyclerView recyclerView;
-    ProgressDialog progressDoalog;
+    private CustomAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    ProgressDialog mProgressDialog;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
 
-        progressDoalog = new ProgressDialog(getActivity());
-        progressDoalog.setMessage("Loading...");
-        progressDoalog.show();
-
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-
-        Call<SimilarArtist> call = service.getALlSimilarArtist();
-
+    private void performApiRequest(GetDataService service, String artistName)
+    {
+        Call<SimilarArtist> call = service.getAllSimilarArtist("artist.getsimilar",artistName,"f1206ed0cd61663480d26f89d76d622b","json" );
 
         call.enqueue(new Callback<SimilarArtist>()
         {
             @Override
             public void onResponse(Call<SimilarArtist> call, Response<SimilarArtist> response)
             {
-                progressDoalog.dismiss();
+                hideProgressDialog();
                 Log.d(TAG,"onFailure Something wrong "+ response.code());
                 List<Artist> artists;
                 if (response.body() != null)
@@ -74,21 +69,32 @@ public class MainFragment extends Fragment
             @Override
             public void onFailure(Call<SimilarArtist> call, Throwable t)
             {
-                progressDoalog.dismiss();
+                hideProgressDialog();
                 Toast.makeText(getActivity(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
                 Log.e(TAG,"onFailure Something wrong "+ t.getMessage());
             }
         });
+    }
 
+    private void hideProgressDialog()
+    {
+        mProgressDialog.dismiss();
+    }
+
+    private void showProgressDialog()
+    {
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.show();
     }
 
     private void generateDataList(List<Artist> artistListList)
     {
-        recyclerView = getActivity().findViewById(R.id.customRecyclerView);
-        adapter = new CustomAdapter(getActivity(), artistListList);
+        mRecyclerView = getActivity().findViewById(R.id.customRecyclerView);
+        mAdapter = new CustomAdapter(getActivity(), artistListList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -106,7 +112,10 @@ public class MainFragment extends Fragment
             @Override
             public boolean onQueryTextSubmit(String s)
             {
-                Toast.makeText(getContext(), "Text inputed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Text submitted", Toast.LENGTH_SHORT).show();
+                showProgressDialog();
+                GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+                performApiRequest(service, s);
                 return true;
             }
 
