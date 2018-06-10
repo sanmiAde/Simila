@@ -75,3 +75,20 @@ fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
 
+.gitignore
+.idea/checkstyle-idea.xml
+.idea/codeStyles/
+.idea/misc.xml
+.idea/runConfigurations.xml
+.idea/vcs.xml
+app/.gitignore
+app/build.gradle
+app/libs/
+app/proguard-rules.pro
+
+
+
+gradle/
+gradlew
+gradlew.bat
+settings.gradle
