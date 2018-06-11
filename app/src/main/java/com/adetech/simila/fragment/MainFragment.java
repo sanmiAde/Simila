@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,15 +31,16 @@ import retrofit2.Response;
 public class MainFragment extends Fragment
 {
     private final String TAG = "MainFragment";
+    ProgressDialog mProgressDialog;
+    private CustomAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private String mSearchedArtist = "";
 
     public static MainFragment newInstance()
     {
         return new MainFragment();
     }
 
-    private CustomAdapter mAdapter;
-    private RecyclerView mRecyclerView;
-    ProgressDialog mProgressDialog;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -48,7 +50,7 @@ public class MainFragment extends Fragment
 
     private void performApiRequest(GetDataService service, String artistName)
     {
-        Call<SimilarArtist> call = service.getAllSimilarArtist("artist.getsimilar",artistName,"f1206ed0cd61663480d26f89d76d622b","json" );
+        Call<SimilarArtist> call = service.getAllSimilarArtist("artist.getsimilar", artistName, "f1206ed0cd61663480d26f89d76d622b", "json");
 
         call.enqueue(new Callback<SimilarArtist>()
         {
@@ -56,12 +58,20 @@ public class MainFragment extends Fragment
             public void onResponse(Call<SimilarArtist> call, Response<SimilarArtist> response)
             {
                 hideProgressDialog();
-                Log.d(TAG,"onFailure Something wrong "+ response.code());
+                Log.d(TAG, "onFailure Something wrong " + response.code());
                 List<Artist> artists;
-                if (response.body() != null)
+                if (response.code() == 200)
                 {
-                     artists  =response.body().getSimilarartists().getArtist();
-                    generateDataList(artists);
+                    if (response.body().getSimilarartists() != null)
+                    {
+                        artists = response.body().getSimilarartists().getArtist();
+                        generateDataList(artists);
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Artist not found", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
 
             }
@@ -71,7 +81,7 @@ public class MainFragment extends Fragment
             {
                 hideProgressDialog();
                 Toast.makeText(getActivity(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-                Log.e(TAG,"onFailure Something wrong "+ t.getMessage());
+                Log.e(TAG, "onFailure Something wrong " + t.getMessage());
             }
         });
     }
@@ -88,6 +98,11 @@ public class MainFragment extends Fragment
         mProgressDialog.show();
     }
 
+    /**
+     * Setup recycler view with data obtained from last.fm API.
+     *
+     * @param artistListList Arraylist obtained from last.fm API
+     */
     private void generateDataList(List<Artist> artistListList)
     {
         mRecyclerView = getActivity().findViewById(R.id.customRecyclerView);
@@ -112,17 +127,22 @@ public class MainFragment extends Fragment
             @Override
             public boolean onQueryTextSubmit(String s)
             {
-                Toast.makeText(getContext(), "Text submitted", Toast.LENGTH_SHORT).show();
-                showProgressDialog();
-                GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-                performApiRequest(service, s);
-                return true;
+                if (!mSearchedArtist.equals(s))
+                {
+                    Toast.makeText(getContext(), "Text submitted", Toast.LENGTH_SHORT).show();
+                    searchView.clearFocus();
+                    mSearchedArtist = s;
+                    showProgressDialog();
+                    GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+                    performApiRequest(service, s);
+                }
+
+                    return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s)
             {
-                Toast.makeText(getContext(), "Text changed", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -133,7 +153,6 @@ public class MainFragment extends Fragment
     {
         switch (item.getItemId())
         {
-
             default:
                 return super.onOptionsItemSelected(item);
         }
