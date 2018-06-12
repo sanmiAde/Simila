@@ -73,7 +73,7 @@ public class SimilarArtistListFragment extends Fragment
             public void onResponse(Call<SimilarArtist> call, Response<SimilarArtist> response)
             {
                 hideProgressDialog();
-                Log.d(TAG, "onFailure Something wrong " + response.code());
+
                 List<Artist> artists;
                 if (response.code() == 200)
                 {
@@ -96,7 +96,7 @@ public class SimilarArtistListFragment extends Fragment
             {
                 hideProgressDialog();
                 Toast.makeText(getActivity(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "onFailure Something wrong " + t.getMessage());
+
             }
         });
     }

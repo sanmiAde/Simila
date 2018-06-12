@@ -1,7 +1,11 @@
 package com.adetech.simila.adapter;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.adetech.simila.R;
+import com.adetech.simila.activity.ArtistPictureActivity;
+import com.adetech.simila.fragment.ArtistPicFragment;
 import com.adetech.simila.model.Artist;
 import com.squareup.picasso.Picasso;
 
@@ -19,6 +25,7 @@ import java.util.List;
 public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtistListAdapter.CustomViewHolder>
 {
 
+    private static final String DIALOG_DATE = "DialogDate";
     private List<Artist> mDataList;
     private Context mContext;
 
@@ -39,7 +46,7 @@ public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtist
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull CustomViewHolder holder, final int position)
     {
         //TODO fix this  use template..
         //ToDo app crashes whn you search genre.
@@ -51,6 +58,19 @@ public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtist
         {
             Picasso.with(mContext).load(artistImagePath).placeholder(R.drawable.ic_launcher_background).into(holder.mArtistImgView);
         }
+
+
+        holder.mArtistImgView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
+                Intent intent = ArtistPictureActivity.newIntent(mContext, mDataList.get(position).getImage().get(5).getText(), mDataList.get(position).getName());
+                mContext.startActivity(intent);
+
+            }
+        });
     }
 
     @Override
@@ -64,6 +84,7 @@ public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtist
     {
         public final View mView;
 
+
         TextView artistNameTxtView;
         TextView mArtistMatchRate;
         ImageView mArtistImgView;
@@ -76,6 +97,8 @@ public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtist
             artistNameTxtView = mView.findViewById(R.id.title);
             mArtistMatchRate = mView.findViewById(R.id.match);
             mArtistImgView = mView.findViewById(R.id.artistImageView);
+
+
         }
 
 
