@@ -10,19 +10,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.adetech.simila.R;
-import com.adetech.simila.fragment.MainFragment;
 import com.adetech.simila.model.Artist;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder>
+public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtistListAdapter.CustomViewHolder>
 {
 
     private List<Artist> mDataList;
     private Context mContext;
 
-    public CustomAdapter(Context context, List<Artist> dataList)
+    public SimilarArtistListAdapter(Context context, List<Artist> dataList)
     {
         mContext = context;
         mDataList = dataList;

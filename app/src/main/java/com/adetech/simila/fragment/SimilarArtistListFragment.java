@@ -2,20 +2,23 @@ package com.adetech.simila.fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.adetech.simila.R;
-import com.adetech.simila.adapter.CustomAdapter;
+import com.adetech.simila.adapter.SimilarArtistListAdapter;
 import com.adetech.simila.model.Artist;
 import com.adetech.simila.model.SimilarArtist;
 import com.adetech.simila.network.GetDataService;
@@ -28,17 +31,29 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MainFragment extends Fragment
+public class SimilarArtistListFragment extends Fragment
 {
-    private final String TAG = "MainFragment";
+    private final String TAG = "SimilarArtistListFragment";
     ProgressDialog mProgressDialog;
-    private CustomAdapter mAdapter;
+    private SimilarArtistListAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private String mSearchedArtist = "";
 
-    public static MainFragment newInstance()
+    public static SimilarArtistListFragment newInstance()
     {
-        return new MainFragment();
+        return new SimilarArtistListFragment();
+    }
+
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        mRecyclerView = view.findViewById(R.id.ArtistRecyclerView);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(layoutManager);
+        return view;
     }
 
     @Override
@@ -105,10 +120,7 @@ public class MainFragment extends Fragment
      */
     private void generateDataList(List<Artist> artistListList)
     {
-        mRecyclerView = getActivity().findViewById(R.id.customRecyclerView);
-        mAdapter = new CustomAdapter(getActivity(), artistListList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(layoutManager);
+        mAdapter = new SimilarArtistListAdapter(getActivity(), artistListList);
         mRecyclerView.setAdapter(mAdapter);
     }
 
