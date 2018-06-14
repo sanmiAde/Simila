@@ -1,7 +1,5 @@
 package com.adetech.simila.adapter;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -15,9 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.adetech.simila.R;
+import com.adetech.simila.activity.ArtistDetailActivity;
 import com.adetech.simila.activity.ArtistPictureActivity;
-import com.adetech.simila.fragment.ArtistPicFragment;
-import com.adetech.simila.model.Artist;
+import com.adetech.simila.model.ArtistList.Artist;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -69,6 +68,16 @@ public class SimilarArtistListAdapter extends RecyclerView.Adapter<SimilarArtist
                 Intent intent = ArtistPictureActivity.newIntent(mContext, mDataList.get(position).getImage().get(5).getText(), mDataList.get(position).getName());
                 mContext.startActivity(intent);
 
+            }
+        });
+
+        holder.artistNameTxtView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent = ArtistDetailActivity.newIntent(mContext, mDataList.get(position).getName());
+                mContext.startActivity(intent);
             }
         });
     }

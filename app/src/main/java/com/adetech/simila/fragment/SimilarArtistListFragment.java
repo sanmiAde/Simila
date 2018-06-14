@@ -19,8 +19,9 @@ import android.widget.Toast;
 
 import com.adetech.simila.R;
 import com.adetech.simila.adapter.SimilarArtistListAdapter;
-import com.adetech.simila.model.Artist;
-import com.adetech.simila.model.SimilarArtist;
+import com.adetech.simila.model.ArtistList.Artist;
+
+import com.adetech.simila.model.ArtistList.SimilarArtist;
 import com.adetech.simila.network.GetDataService;
 import com.adetech.simila.network.RetrofitClientInstance;
 
@@ -33,7 +34,7 @@ import retrofit2.Response;
 
 public class SimilarArtistListFragment extends Fragment
 {
-    private final String TAG = "SimilarArtistListFragment";
+    private final String TAG = "SimilarArtistFragement";
     ProgressDialog mProgressDialog;
     private SimilarArtistListAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -96,7 +97,7 @@ public class SimilarArtistListFragment extends Fragment
             {
                 hideProgressDialog();
                 Toast.makeText(getActivity(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-
+                Log.e(TAG, t.getMessage());
             }
         });
     }
@@ -139,6 +140,7 @@ public class SimilarArtistListFragment extends Fragment
             @Override
             public boolean onQueryTextSubmit(String s)
             {
+                //Fix bug: User can't query the same artist when internet is turned off and on.
                 if (!mSearchedArtist.equals(s))
                 {
                     Toast.makeText(getContext(), "Text submitted", Toast.LENGTH_SHORT).show();
